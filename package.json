@@ -1,0 +1,6 @@
+{
+  "name": "feliz-viaje-villa-insurgentes",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" }
+}
