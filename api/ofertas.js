@@ -135,6 +135,34 @@ export function extraer(html) {
   return paquetes;
 }
 
+/* viaje.ly responde JSON ({title, header, collection}); cada paquete se enlaza
+   dentro del sitio de la agencia: /feliz-viaje-villa-insurgentes/{mt}.html */
+export function desdeJson(data) {
+  const vistos = new Set();
+  const paquetes = [];
+  for (const it of [...(Array.isArray(data.collection) ? data.collection : []), ...(Array.isArray(data.header) ? data.header : [])]) {
+    const mt = String((it && it.mt) ?? '').trim();
+    if (!mt || !it.name || vistos.has(mt)) continue;
+    vistos.add(mt);
+    paquetes.push({
+      titulo: limpiar(String(it.name)),
+      url: AGENCIA_URL + '/' + encodeURIComponent(mt) + '.html',
+      imagen: absoluta(it.img || it.img_detail),
+      precio: it.price_from ?? '', moneda: String(it.currency || '').toUpperCase(),
+      impuestos: it.taxes ?? '',
+      dias: Number(it.days) || null, noches: Number(it.nights) || null,
+    });
+    if (paquetes.length >= MAX_PAQUETES) break;
+  }
+  return paquetes;
+}
+
+export function paquetesDe(cuerpo) {
+  let data = null;
+  try { data = JSON.parse(cuerpo); } catch { /* no es JSON: se trata como HTML */ }
+  return data && typeof data === 'object' ? desdeJson(data) : extraer(cuerpo);
+}
+
 /* ---------------- Descarga ---------------- */
 function cookiesDe(res) {
   const list = typeof res.headers.getSetCookie === 'function' ? res.headers.getSetCookie() : (res.headers.get('set-cookie') || '').split(/,(?=\s*[^;=\s]+=)/);
@@ -153,7 +181,7 @@ async function obtener(region) {
   // 2) Pedir la lista de la región, como lo hace el filtro.
   const r2 = await fetch(OFERTAS_BASE + region, {
     headers: {
-      'User-Agent': UA, 'Accept-Language': 'es-MX,es;q=0.9',
+      'User-Agent': UA, 'Accept-Language': 'es-MX,es;q=0.9', Accept: 'application/json, text/html;q=0.9',
       'X-Requested-With': 'XMLHttpRequest', Referer: AGENCIA_URL + '#ofertas',
       ...(cookie ? { Cookie: cookie } : {}),
     },
@@ -177,8 +205,7 @@ export default async function handler(req, res) {
     return;
   }
   try {
-    const html = await obtener(region);
-    const paquetes = extraer(html);
+    const paquetes = paquetesDe(await obtener(region));
     res.setHeader('Cache-Control', paquetes.length
       ? `public, s-maxage=${CACHE_SEGUNDOS}, stale-while-revalidate=86400`
       : 'public, s-maxage=120');
