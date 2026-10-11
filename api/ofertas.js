@@ -164,6 +164,12 @@ async function obtener(region) {
 }
 
 export default async function handler(req, res) {
+  // Permite que tu página la consulte aunque esté en otro dominio.
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Accept, Content-Type');
+  if (req.method === 'OPTIONS') { res.status(204).end(); return; }
+
   const region = String((req.query && req.query.region) || '').toLowerCase().trim();
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   if (!REGIONES.includes(region)) {
