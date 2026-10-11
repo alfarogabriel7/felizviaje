@@ -647,9 +647,12 @@ var PROMOS={"europa":[{"t":"Ruta de la Fe, Italia y Tierra Santa","i":"https://o
   })});
 
   /* ---------- Promotions ----------
-     Live data from the fixed API address below (Vercel function that reads viaje.ly).
+     Live data from the Vercel function /api/ofertas (it reads viaje.ly/feliz-viaje-villa-insurgentes;
+     the browser can't call viaje.ly directly because it sends no CORS headers).
+     On Vercel the page uses its own deployment's API; anywhere else, the public production domain.
+     Never point this at a per-deployment address (felizviaje-xxxx-….vercel.app): those require a Vercel login.
      If it can't be reached, the page shows the PROMOS snapshot embedded above. */
-  var PROMO_API="https://TU-PROYECTO.vercel.app/api/ofertas";   /* <-- dirección fija de tu API en Vercel */
+  var PROMO_API=(/\.vercel\.app$/.test(location.hostname)?location.origin:"https://felizviaje.vercel.app")+"/api/ofertas";
   var CATALOGO="https://viaje.ly/feliz-viaje-villa-insurgentes#ofertas";
   var pGrid=$("promoGrid"), pMsg=$("promoMsg"), pTabs=[].slice.call(document.querySelectorAll(".ptabs button"));
   var REG_NOMBRE={europa:"Europa",asia:"Asia",centroamerica:"Centroamérica",sudamerica:"Sudamérica",cruceros:"Cruceros"};
@@ -684,7 +687,6 @@ var PROMOS={"europa":[{"t":"Ruta de la Fe, Italia y Tierra Santa","i":"https://o
     pActual=region;
     pTabs.forEach(function(b){b.setAttribute("aria-selected",b.dataset.r===region?"true":"false")});
     if(pCache[region]){render(region,pCache[region]);return}
-    if(!/^https:\/\//.test(PROMO_API)||/TU-PROYECTO/.test(PROMO_API)){render(region,snapshot(region));return}
     skeleton();
     var ctrl=("AbortController" in window)?new AbortController():null, timer=setTimeout(function(){ctrl&&ctrl.abort()},15000);
     fetch(PROMO_API+"?region="+encodeURIComponent(region),{signal:ctrl&&ctrl.signal,headers:{"Accept":"application/json"}})
