@@ -2,5 +2,6 @@
   "name": "feliz-viaje-villa-insurgentes",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=18" }
+  "engines": { "node": ">=18" },
+  "scripts": { "build": "node scripts/generar-promociones.mjs" }
 }
