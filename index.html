@@ -194,6 +194,11 @@ section.s{padding-block:84px}
 .pcard .pa .btn{flex:1 1 130px;padding:10px 12px;font-size:.9rem}
 .pcard.sk{min-height:340px;background:linear-gradient(100deg,var(--paper) 30%,var(--paper-2) 50%,var(--paper) 70%);background-size:200% 100%;animation:sk 1.4s linear infinite}
 @keyframes sk{to{background-position:-200% 0}}
+/* own promotions (uploaded images): show the whole image, uncropped */
+.pcard.foto .ph{aspect-ratio:auto}
+.pcard.foto .ph a{display:block}
+.pcard.foto .ph img{height:auto}
+.pcard .pd{color:var(--muted);font-size:.95rem;white-space:pre-line}
 .pmsg{display:grid;justify-items:start;gap:14px;padding:24px;border:1px dashed var(--line);border-radius:8px;color:var(--muted)}
 .pfine{margin-top:20px;font-size:.82rem;color:var(--muted)}
 .pfine a{color:var(--teal);font-weight:600}
@@ -445,7 +450,7 @@ footer{background:var(--paper);border-top:1px solid var(--line)}
           <svg class="scene" viewBox="0 0 200 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><circle cx="140" cy="70" r="22" fill="#FFF1D6" opacity=".85"/><path d="M40 200V120M120 200V120M28 120h104M34 104h92l-6 8H40Z" stroke="#5E2338" stroke-width="8" fill="#5E2338"/><path d="M0 180h200v20H0Z" fill="#5E2338"/></svg>
           <small>Internacional</small><h3>Asia</h3><span class="go">Japón, Turquía, Tailandia <svg class="i"><use href="#arrow"/></svg></span>
         </a>
-        <a class="d" href="#cotizar" data-dest="Pueblos Mágicos">
+        <a class="d" href="#promociones" data-promo="pueblosmagicos"><span class="ext">Ver promociones</span>
           <div class="sky pueblo"></div>
           <svg class="scene" viewBox="0 0 200 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><path d="M80 200V110l20-30 20 30v90Z M94 70h12v12H94Z M100 50v20" fill="#7A2E20" stroke="#7A2E20" stroke-width="3"/><path d="M0 200v-50h40v-15h30v65Zm130 0v-60h35v20h35v40Z" fill="#8F3A27"/></svg>
           <small>México</small><h3>Pueblos Mágicos</h3><span class="go">Escapadas de fin de semana <svg class="i"><use href="#arrow"/></svg></span>
@@ -470,6 +475,7 @@ footer{background:var(--paper);border-top:1px solid var(--line)}
         <button type="button" role="tab" id="pt-centroamerica" data-r="centroamerica" aria-selected="false">Centroamérica</button>
         <button type="button" role="tab" id="pt-sudamerica" data-r="sudamerica" aria-selected="false">Sudamérica</button>
         <button type="button" role="tab" id="pt-cruceros" data-r="cruceros" aria-selected="false">Cruceros</button>
+        <button type="button" role="tab" id="pt-pueblosmagicos" data-r="pueblosmagicos" aria-selected="false">Pueblos Mágicos</button>
       </div>
       <div class="pgrid" id="promoGrid" aria-live="polite">
         <div class="pcard sk"></div><div class="pcard sk"></div><div class="pcard sk"></div>
@@ -478,7 +484,7 @@ footer{background:var(--paper);border-top:1px solid var(--line)}
         <p id="promoMsgTxt">No pudimos cargar las promociones en este momento.</p>
         <a class="btn btn-mag" id="promoMsgLink" href="https://viaje.ly/feliz-viaje-villa-insurgentes#ofertas" target="_blank" rel="noopener">Ver catálogo completo</a>
       </div>
-      <p class="pfine">Precios por persona en habitación doble, en la moneda indicada, más impuestos. Sujetos a disponibilidad y cambios; confírmalos con tu asesor. <a href="https://viaje.ly/feliz-viaje-villa-insurgentes#ofertas" target="_blank" rel="noopener">Ver catálogo completo</a></p>
+      <p class="pfine" id="promoFine">Precios por persona en habitación doble, en la moneda indicada, más impuestos. Sujetos a disponibilidad y cambios; confírmalos con tu asesor. <a href="https://viaje.ly/feliz-viaje-villa-insurgentes#ofertas" target="_blank" rel="noopener">Ver catálogo completo</a></p>
     </div>
   </section>
 
@@ -655,12 +661,14 @@ var PROMOS={"europa":[{"t":"Ruta de la Fe, Italia y Tierra Santa","i":"https://o
   var PROMO_API=(/\.vercel\.app$/.test(location.hostname)?location.origin:"https://felizviaje.vercel.app")+"/api/ofertas";
   var CATALOGO="https://viaje.ly/feliz-viaje-villa-insurgentes#ofertas";
   var pGrid=$("promoGrid"), pMsg=$("promoMsg"), pTabs=[].slice.call(document.querySelectorAll(".ptabs button"));
-  var REG_NOMBRE={europa:"Europa",asia:"Asia",centroamerica:"Centroamérica",sudamerica:"Sudamérica",cruceros:"Cruceros"};
+  var REG_NOMBRE={europa:"Europa",asia:"Asia",centroamerica:"Centroamérica",sudamerica:"Sudamérica",cruceros:"Cruceros",pueblosmagicos:"Pueblos Mágicos"};
+  /* Own promotions: images uploaded to promocion/<folder>/ (lista.json is generated on deploy). */
+  var PROMO_DIR={pueblosmagicos:"promocion/pueblosmagicos/"};
   var pCache={}, pActual="";
   function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
   function num(n){var v=Number(String(n).replace(/[^\d.]/g,""));return isNaN(v)||!String(n).length?String(n):v.toLocaleString("es-MX")}
   function safeUrl(u){return /^https:\/\//i.test(u||"")?u:""}
-  function showMsg(t){pGrid.hidden=true;pMsg.hidden=false;$("promoMsgTxt").textContent=t}
+  function showMsg(t,sinCatalogo){pGrid.hidden=true;pMsg.hidden=false;$("promoMsgTxt").textContent=t;$("promoMsgLink").hidden=!!sinCatalogo}
   function skeleton(){pGrid.innerHTML='<div class="pcard sk"></div><div class="pcard sk"></div><div class="pcard sk"></div>';pGrid.hidden=false;pMsg.hidden=true}
   /* API items -> same shape as the snapshot */
   function fromApi(list){return list.map(function(p){return {t:p.titulo,i:p.imagen,d:p.dias,n:p.noches,p:p.precio,m:p.moneda,x:p.impuestos,u:p.url}})}
@@ -682,10 +690,34 @@ var PROMOS={"europa":[{"t":"Ruta de la Fe, Italia y Tierra Santa","i":"https://o
     }).join("");
     pGrid.querySelectorAll("img").forEach(function(im){im.addEventListener("error",function(){im.remove()})});
   }
+  function renderFotos(region,list){
+    if(!list||!list.length){showMsg("Pronto publicaremos promociones de "+REG_NOMBRE[region]+". Mientras tanto, escríbenos y te armamos una propuesta.",true);return}
+    pGrid.hidden=false;pMsg.hidden=true;
+    pGrid.innerHTML=list.map(function(p){
+      var src=PROMO_DIR[region]+encodeURIComponent(p.archivo);
+      var wa="https://wa.me/"+WA+"?text="+encodeURIComponent("Hola Feliz Viaje Villa Insurgentes, me interesa la promoción \""+p.titulo+"\" ("+REG_NOMBRE[region]+").\n"+new URL(src,location.href).href+"\n¿Me pueden dar más información?");
+      return '<article class="pcard foto">'+
+        '<div class="ph"><a href="'+esc(src)+'" target="_blank" rel="noopener"><img src="'+esc(src)+'" alt="'+esc(p.titulo)+'" loading="lazy"></a></div>'+
+        '<div class="pb"><h3>'+esc(p.titulo)+'</h3>'+(p.descripcion?'<p class="pd">'+esc(p.descripcion)+'</p>':'')+'</div>'+
+        '<div class="pa"><a class="btn btn-wa" href="'+esc(wa)+'" target="_blank" rel="noopener"><svg class="i"><use href="#wa"/></svg>Solicitar información</a></div>'+
+      '</article>';
+    }).join("");
+    pGrid.querySelectorAll("img").forEach(function(im){im.addEventListener("error",function(){im.remove()})});
+  }
+  function loadFotos(region){
+    if(pCache[region]){renderFotos(region,pCache[region]);return}
+    skeleton();
+    fetch(PROMO_DIR[region]+"lista.json",{headers:{"Accept":"application/json"}})
+      .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+      .then(function(d){pCache[region]=Array.isArray(d)?d:[];if(pActual===region)renderFotos(region,pCache[region])})
+      .catch(function(){if(pActual===region)renderFotos(region,[])});
+  }
   function snapshot(region){return (window.PROMOS&&PROMOS[region])||[]}
   function loadPromos(region){
     pActual=region;
     pTabs.forEach(function(b){b.setAttribute("aria-selected",b.dataset.r===region?"true":"false")});
+    $("promoFine").hidden=!!PROMO_DIR[region];
+    if(PROMO_DIR[region]){loadFotos(region);return}
     if(pCache[region]){render(region,pCache[region]);return}
     skeleton();
     var ctrl=("AbortController" in window)?new AbortController():null, timer=setTimeout(function(){ctrl&&ctrl.abort()},15000);
