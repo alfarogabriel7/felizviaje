@@ -109,6 +109,36 @@ nav.mn a.l:hover::after{transform:scaleX(1)}
 .f input:disabled,.f select:disabled{background:var(--paper);color:var(--muted);border-style:dashed;cursor:not-allowed}
 .f select.bad{border-color:var(--magenta)}
 label.f:has(input:disabled){opacity:.6}
+@media (max-width:520px){.grid2.keep2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* date picker: two buttons + one inline month panel (inline because .qp clips popovers) */
+.dbtn{display:flex;align-items:center;gap:8px;font:500 .98rem var(--f-body);letter-spacing:0;text-transform:none;text-align:left;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:6px;padding:11px 12px;width:100%;min-width:0;cursor:pointer}
+.dbtn .i{color:var(--teal);flex:none}
+.dbtn span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.dbtn.empty span{color:var(--muted)}
+.dbtn:focus-visible,.dbtn[aria-expanded="true"]{outline:none;border-color:var(--aqua);box-shadow:0 0 0 3px color-mix(in srgb,var(--aqua) 22%,transparent)}
+@media (max-width:380px){.dbtn .i{display:none}}
+.cal{display:grid;gap:10px;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.cal-t{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--magenta);text-align:center}
+.cal-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cal-h strong{font:400 1.15rem var(--f-display)}
+.cal-nav{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;display:grid;place-items:center;flex:none}
+.cal-nav.prev svg{transform:rotate(180deg)}
+.cal-nav:hover:not(:disabled){border-color:var(--aqua)}
+.cal-nav:disabled{opacity:.35;cursor:not-allowed}
+.cal-w,.cal-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));row-gap:3px}
+.cal-w span{text-align:center;font-size:.72rem;font-weight:700;letter-spacing:.04em;color:var(--muted)}
+.cal-g button{height:38px;padding:0;border:0;border-radius:8px;background:none;font:500 .95rem var(--f-body);font-variant-numeric:tabular-nums;color:var(--fg);cursor:pointer}
+.cal-g button:hover:not(:disabled):not(.sel){background:var(--paper-2)}
+.cal-g button:disabled{color:var(--muted);opacity:.45;cursor:not-allowed}
+.cal-g button.today{box-shadow:inset 0 0 0 1.5px var(--aqua)}
+.cal-g button.in{background:color-mix(in srgb,#B94A92 16%,transparent);border-radius:0}
+.cal-g button.sel{background:#B94A92;color:#fff;font-weight:700;box-shadow:none}
+.cal-g button.sel.a{border-radius:8px 0 0 8px}
+.cal-g button.sel.b{border-radius:0 8px 8px 0}
+.cal-g button:focus-visible,.cal-nav:focus-visible,.cal-f button:focus-visible{outline:3px solid var(--sun);outline-offset:-2px}
+.cal-f{display:flex;justify-content:space-between;align-items:center}
+.cal-f button{font:600 .88rem var(--f-body);background:none;border:0;color:var(--teal);cursor:pointer;padding:6px 4px}
 
 /* transport switch */
 .trans{display:grid;gap:12px;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
@@ -301,7 +331,8 @@ footer{background:var(--paper);border-top:1px solid var(--line)}
   <symbol id="star" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z"/></symbol>
   <symbol id="check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
   <symbol id="bus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M5 17V5.5C5 4 6.5 3 12 3s7 1 7 2.5V17M5 11h14M5 17h14v2h-2v-2M7 17v2h2v-2M8 14h.01M16 14h.01"/></symbol>
-  <symbol id="arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  <symbol id="cal-i" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 3v4m10-4v4M4 10h16M6 5h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/></symbol>
+  <symbol id="arrow"viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-5-5 5 5-5 5"/></symbol>
 </svg>
 
 <div class="util">
@@ -362,8 +393,8 @@ footer{background:var(--paper);border-top:1px solid var(--line)}
               <span class="sw-state" id="swState">No · solo hospedaje</span>
             </div>
             <div class="seg" id="transMode" role="radiogroup" aria-label="Tipo de transporte" hidden>
-              <label for="tm-bus"><input type="radio" name="tmode" id="tm-bus" value="Autobús"><span><svg class="i"><use href="#bus"/></svg>Autobús</span></label>
-              <label for="tm-vuelo"><input type="radio" name="tmode" id="tm-vuelo" value="Vuelo" checked><span><svg class="i"><use href="#plane"/></svg>Vuelo</span></label>
+              <label for="tm-bus"><input type="radio" name="tmode" id="tm-bus" value="Autobús" checked><span><svg class="i"><use href="#bus"/></svg>Autobús</span></label>
+              <label for="tm-vuelo"><input type="radio" name="tmode" id="tm-vuelo" value="Vuelo"><span><svg class="i"><use href="#plane"/></svg>Vuelo</span></label>
             </div>
           </div>
           <div class="grid2">
@@ -385,9 +416,28 @@ footer{background:var(--paper);border-top:1px solid var(--line)}
               <select id="subdest" disabled><option value="">Primero elige la región</option></select>
             </label>
           </div>
-          <div class="grid4">
-            <label class="f" for="salida"><span id="lblSalida">Salida</span><input id="salida" type="date"></label>
-            <label class="f" for="regreso"><span id="lblRegreso">Regreso</span><input id="regreso" type="date"></label>
+          <div class="grid2 keep2">
+            <div class="f"><span id="lblSalida">Salida</span>
+              <button type="button" class="dbtn empty" id="salidaBtn" aria-labelledby="lblSalida salidaTxt" aria-controls="cal" aria-expanded="false"><svg class="i"><use href="#cal-i"/></svg><span id="salidaTxt">Elegir fecha</span></button>
+              <input type="hidden" id="salida">
+            </div>
+            <div class="f"><span id="lblRegreso">Regreso</span>
+              <button type="button" class="dbtn empty" id="regresoBtn" aria-labelledby="lblRegreso regresoTxt" aria-controls="cal" aria-expanded="false"><svg class="i"><use href="#cal-i"/></svg><span id="regresoTxt">Elegir fecha</span></button>
+              <input type="hidden" id="regreso">
+            </div>
+          </div>
+          <div class="cal" id="cal" role="group" aria-labelledby="calFor" hidden>
+            <p class="cal-t" id="calFor"></p>
+            <div class="cal-h">
+              <button type="button" class="cal-nav prev" id="calPrev" aria-label="Mes anterior"><svg class="i"><use href="#arrow"/></svg></button>
+              <strong id="calTitle" aria-live="polite"></strong>
+              <button type="button" class="cal-nav" id="calNext" aria-label="Mes siguiente"><svg class="i"><use href="#arrow"/></svg></button>
+            </div>
+            <div class="cal-w" aria-hidden="true"><span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span></div>
+            <div class="cal-g" id="calGrid"></div>
+            <div class="cal-f"><button type="button" id="calClear">Borrar fecha</button><button type="button" id="calDone">Listo</button></div>
+          </div>
+          <div class="grid2 keep2">
             <label class="f" for="adultos">Adultos<input id="adultos" type="number" min="1" value="2"></label>
             <label class="f" for="menores">Menores<input id="menores" type="number" min="0" max="10" value="0"></label>
           </div>
@@ -397,7 +447,7 @@ footer{background:var(--paper);border-top:1px solid var(--line)}
           </div>
           <div class="grid2">
             <label class="f" for="nombre">Nombre completo<input id="nombre" autocomplete="name"></label>
-            <label class="f" for="tel">Teléfono / WhatsApp<input id="tel" type="tel" inputmode="tel" autocomplete="tel"></label>
+            <label class="f" for="tel">Teléfono / WhatsApp<input id="tel" type="tel" inputmode="numeric" autocomplete="tel"></label>
           </div>
           <label class="f" for="detalles">Detalles adicionales <span style="text-transform:none;letter-spacing:0;font-weight:500">(opcional)</span><textarea id="detalles" placeholder="Presupuesto, plan todo incluido, edades de menores, tipo de habitación..."></textarea></label>
           <p class="err" id="err" hidden></p>
@@ -566,6 +616,8 @@ var PROMOS={"europa":[{"t":"Ruta de la Fe, Italia y Tierra Santa","i":"https://o
 <script>
 (function(){
   var WA="524771361173", $=function(id){return document.getElementById(id)};
+  /* Quote log: URL of the Google Apps Script web app (scripts/bitacora-sheets.gs). Empty = nothing is logged. */
+  var SHEETS_URL="https://script.google.com/macros/s/AKfycbylEUYsP4lFnVE0_csTFQ6N0qW782UwEB5IF6bkAqUtYL1IYxsDH3v3JqNdsWibPDI1/exec";
   var hdr=$("hdr");
   /* only a shadow on scroll: changing the header height made the page jump */
   addEventListener("scroll",function(){hdr.classList.toggle("scrolled",scrollY>8)},{passive:true});
@@ -618,6 +670,7 @@ var PROMOS={"europa":[{"t":"Ruta de la Fe, Italia y Tierra Santa","i":"https://o
     $("qtitle").textContent=c.t; $("lblDestino").textContent=c.d; $("lblSalida").textContent=c.s; $("lblRegreso").textContent=c.r;
     $("f-destino").hidden=!!c.intl; $("intlBox").hidden=!c.intl;
     syncOrigin();
+    if(calMode) closeCal();
     $("retry").hidden=true;
   }
 
@@ -643,6 +696,91 @@ var PROMOS={"europa":[{"t":"Ruta de la Fe, Italia y Tierra Santa","i":"https://o
     $("ages").hidden = n===0;
   }
   menores.addEventListener("input",renderAges);
+
+  /* typing filters: drop every character matching `re` (skipped mid-composition so dead-key accents still work) */
+  function filtra(el,re){
+    function run(e){
+      if(e && e.isComposing) return;
+      var v=el.value.replace(re,""); if(v===el.value) return;
+      var p=Math.max(0,(el.selectionStart||0)-(el.value.length-v.length));
+      el.value=v; try{el.setSelectionRange(p,p)}catch(ex){}
+    }
+    el.addEventListener("input",run); el.addEventListener("compositionend",function(){run()}); el.addEventListener("blur",function(){run()});
+  }
+  var LETRAS="A-Za-zÁÉÍÓÚÜÑáéíóúüñ";
+  filtra(origen,new RegExp("[^"+LETRAS+", ]","g"));
+  filtra($("destino"),new RegExp("[^"+LETRAS+", ]","g"));
+  filtra($("nombre"),new RegExp("[^"+LETRAS+" ]","g"));
+  filtra($("tel"),/\D/g);
+
+  /* date picker: #salida / #regreso keep the yyyy-mm-dd value, the buttons show it, #cal picks it */
+  var MES=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  var calEl=$("cal"), calGrid=$("calGrid"), calMode=null, view=null;
+  function pad(n){return (n<10?"0":"")+n}
+  function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+  var hoy=iso(new Date());
+  function paintBtns(){
+    ["salida","regreso"].forEach(function(k){
+      var v=$(k).value, b=$(k+"Btn"), p=v.split("-");
+      b.classList.toggle("empty",!v);
+      $(k+"Txt").textContent = v ? (+p[2])+" "+MES[p[1]-1].slice(0,3).toLowerCase()+" "+p[0] : "Elegir fecha";
+      b.setAttribute("aria-expanded",calMode===k?"true":"false");
+    });
+  }
+  function drawCal(){
+    var y=view.getFullYear(), m=view.getMonth(), s=$("salida").value, r=$("regreso").value;
+    var min = calMode==="regreso" && s>hoy ? s : hoy;
+    $("calFor").textContent="Elige la fecha de "+$(calMode==="salida"?"lblSalida":"lblRegreso").textContent.toLowerCase();
+    $("calTitle").textContent=MES[m]+" "+y;
+    $("calPrev").disabled = y+"-"+pad(m+1) <= min.slice(0,7);
+    $("calClear").hidden = !$(calMode).value;
+    var h="", lead=new Date(y,m,1).getDay(), n=new Date(y,m+1,0).getDate();
+    for(var i=0;i<lead;i++) h+="<span></span>";
+    for(var d=1;d<=n;d++){
+      var v=y+"-"+pad(m+1)+"-"+pad(d), c=[];
+      if(v===hoy) c.push("today");
+      if(v===s||v===r) c.push("sel");
+      if(s&&r&&r>s){ if(v===s) c.push("a"); if(v===r) c.push("b"); if(v>s&&v<r) c.push("in"); }
+      h+='<button type="button" data-v="'+v+'" class="'+c.join(" ")+'"'+(v<min?" disabled":"")+(v===$(calMode).value?' aria-pressed="true"':'')+' aria-label="'+d+" de "+MES[m].toLowerCase()+" de "+y+'">'+d+'</button>';
+    }
+    calGrid.innerHTML=h;
+  }
+  function openCal(k){
+    calMode=k;
+    var p=($(k).value || (k==="regreso" && $("salida").value>hoy && $("salida").value) || hoy).split("-");
+    view=new Date(+p[0],p[1]-1,1);
+    calEl.hidden=false; drawCal(); paintBtns();
+  }
+  function closeCal(back){
+    var k=calMode; calMode=null; calEl.hidden=true; paintBtns();
+    if(back && k) $(k+"Btn").focus();
+  }
+  ["salida","regreso"].forEach(function(k){
+    $(k+"Btn").addEventListener("click",function(){ if(calMode===k) closeCal(); else openCal(k); });
+  });
+  $("calPrev").addEventListener("click",function(){ view.setMonth(view.getMonth()-1); drawCal(); });
+  $("calNext").addEventListener("click",function(){ view.setMonth(view.getMonth()+1); drawCal(); });
+  $("calClear").addEventListener("click",function(){ $(calMode).value=""; drawCal(); paintBtns(); });
+  $("calDone").addEventListener("click",function(){ closeCal(true); });
+  calGrid.addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b || b.disabled) return;
+    var v=b.dataset.v;
+    $(calMode).value=v; $("err").hidden=true;
+    if(calMode==="regreso"){ closeCal(true); return; }
+    /* after the departure, go straight on to the return date */
+    if($("regreso").value && $("regreso").value<v) $("regreso").value="";
+    openCal("regreso");
+    var f=calGrid.querySelector('[data-v="'+v+'"]'); if(f) f.focus();
+  });
+  calEl.addEventListener("keydown",function(e){
+    if(e.key==="Escape"){ closeCal(true); return; }
+    var step={ArrowLeft:-1,ArrowRight:1,ArrowUp:-7,ArrowDown:7}[e.key];
+    if(!step || e.target.parentNode!==calGrid) return;
+    var list=[].slice.call(calGrid.querySelectorAll("button")), t=list[list.indexOf(e.target)+step];
+    e.preventDefault();
+    if(t && !t.disabled) t.focus();
+  });
+  paintBtns();
   syncOrigin();
   tabs.forEach(function(b){b.addEventListener("click",function(){setTab(b)})});
   document.querySelectorAll("[data-tab]").forEach(function(a){a.addEventListener("click",function(){setTab($(a.dataset.tab))})});
@@ -768,6 +906,21 @@ var PROMOS={"europa":[{"t":"Ruta de la Fe, Italia y Tierra Santa","i":"https://o
     if($("detalles").value.trim()) L.push("• Detalles: "+$("detalles").value.trim());
     L.push("","Nombre: "+$("nombre").value.trim(),"Teléfono: "+$("tel").value.trim());
     msg=L.join("\n");
+    /* log the request in Google Sheets; fire-and-forget so it never delays or blocks WhatsApp */
+    if(SHEETS_URL){
+      var tmv=document.querySelector('input[name="tmode"]:checked');
+      var row={
+        servicio:tipo,
+        transporte:c.o==="toggle" ? (sw.checked ? (tmv?tmv.value:"Sí") : "No") : "",
+        origen:originNeeded() ? origen.value.trim() : "",
+        destino:c.intl ? region.value+" · "+subdest.value : $("destino").value.trim(),
+        salida:$("salida").value, regreso:$("regreso").value,
+        adultos:$("adultos").value||"0", menores:ageSel.length,
+        edades:ageSel.map(function(s){return s.value}).join(", "),
+        nombre:$("nombre").value.trim(), tel:$("tel").value.trim(), detalles:$("detalles").value.trim()
+      };
+      try{ fetch(SHEETS_URL,{method:"POST",mode:"no-cors",keepalive:true,body:JSON.stringify(row)}).catch(function(){}); }catch(ex){}
+    }
     var url="https://wa.me/"+WA+"?text="+encodeURIComponent(msg);
     $("waRetry").href=url;
     /* open WhatsApp right away: new tab/app first, then a real link click as fallback */
