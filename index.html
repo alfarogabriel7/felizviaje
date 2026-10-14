@@ -240,6 +240,7 @@ section.s{padding-block:84px}
 .sky.euro{background:linear-gradient(180deg,#F3C1D9 0%,#C27BA8 55%,#5A3A63 100%)}
 .sky.asia{background:linear-gradient(180deg,#FBE3C2 0%,#E7916F 50%,#8F3F5C 100%)}
 .sky.ship{background:linear-gradient(180deg,#BFE6EA 0%,#5FB3BB 55%,#03636B 100%)}
+.sky.charter{background:linear-gradient(180deg,#D8ECF8 0%,#8CC0E2 50%,#3A7CA8 100%)}
 .sky.pueblo{background:linear-gradient(180deg,#FCE7A8 0%,#F2B705 40%,#C9573D 100%)}
 .sky.centro{background:linear-gradient(180deg,#D9F0D5 0%,#6FB48A 50%,#1F5E4E 100%)}
 @media (max-width:900px){.dest{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:200px}.d.tall{grid-row:span 1}}
@@ -500,6 +501,11 @@ footer{background:var(--paper);border-top:1px solid var(--line)}
           <svg class="scene" viewBox="0 0 200 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><circle cx="140" cy="70" r="22" fill="#FFF1D6" opacity=".85"/><path d="M40 200V120M120 200V120M28 120h104M34 104h92l-6 8H40Z" stroke="#5E2338" stroke-width="8" fill="#5E2338"/><path d="M0 180h200v20H0Z" fill="#5E2338"/></svg>
           <small>Internacional</small><h3>Asia</h3><span class="go">Japón, Turquía, Tailandia <svg class="i"><use href="#arrow"/></svg></span>
         </a>
+        <a class="d" href="#promociones" data-promo="charter"><span class="ext">Ver promociones</span>
+          <div class="sky charter"></div>
+          <svg class="scene" viewBox="0 0 400 200" preserveAspectRatio="xMaxYMin slice" aria-hidden="true"><path d="M0 200V104Q120 62 232 73H400V200Z" fill="#2A6587"/><path d="M0 200V150Q150 108 400 138V200Z" fill="#17384E"/><rect x="252" y="18" width="112" height="46" rx="8" fill="#fff"/><path d="M262 27h64v15h-64Z M332 27h24v15h-24Z" fill="#5E9CC6"/><path d="M252 52h112" stroke="#B94A92" stroke-width="5"/><circle cx="280" cy="65" r="9" fill="#0E2433"/><circle cx="338" cy="65" r="9" fill="#0E2433"/><circle cx="280" cy="65" r="3.5" fill="#C9D6DD"/><circle cx="338" cy="65" r="3.5" fill="#C9D6DD"/></svg>
+          <small>México</small><h3>Charter carretero</h3><span class="go">Autobús + hotel todo incluido <svg class="i"><use href="#arrow"/></svg></span>
+        </a>
         <a class="d" href="#promociones" data-promo="pueblosmagicos"><span class="ext">Ver promociones</span>
           <div class="sky pueblo"></div>
           <svg class="scene" viewBox="0 0 200 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><path d="M80 200V110l20-30 20 30v90Z M94 70h12v12H94Z M100 50v20" fill="#7A2E20" stroke="#7A2E20" stroke-width="3"/><path d="M0 200v-50h40v-15h30v65Zm130 0v-60h35v20h35v40Z" fill="#8F3A27"/></svg>
@@ -520,12 +526,13 @@ footer{background:var(--paper);border-top:1px solid var(--line)}
         <div><p class="label">Promociones vigentes</p><h2>Paquetes con salida garantizada</h2><p>Circuitos y cruceros con precios actualizados. Elige una región y pregúntanos por cualquier paquete.</p></div>
       </div>
       <div class="ptabs" role="tablist" aria-label="Región de promociones">
+        <button type="button" role="tab" id="pt-charter" data-r="charter" aria-selected="false">Charter carretero</button>
+        <button type="button" role="tab" id="pt-pueblosmagicos" data-r="pueblosmagicos" aria-selected="false">Pueblos Mágicos</button>
         <button type="button" role="tab" id="pt-europa" data-r="europa" aria-selected="true">Europa</button>
         <button type="button" role="tab" id="pt-asia" data-r="asia" aria-selected="false">Asia</button>
         <button type="button" role="tab" id="pt-centroamerica" data-r="centroamerica" aria-selected="false">Centroamérica</button>
         <button type="button" role="tab" id="pt-sudamerica" data-r="sudamerica" aria-selected="false">Sudamérica</button>
         <button type="button" role="tab" id="pt-cruceros" data-r="cruceros" aria-selected="false">Cruceros</button>
-        <button type="button" role="tab" id="pt-pueblosmagicos" data-r="pueblosmagicos" aria-selected="false">Pueblos Mágicos</button>
       </div>
       <div class="pgrid" id="promoGrid" aria-live="polite">
         <div class="pcard sk"></div><div class="pcard sk"></div><div class="pcard sk"></div>
@@ -799,9 +806,9 @@ var PROMOS={"europa":[{"t":"Ruta de la Fe, Italia y Tierra Santa","i":"https://o
   var PROMO_API=(/\.vercel\.app$/.test(location.hostname)?location.origin:"https://felizviaje.vercel.app")+"/api/ofertas";
   var CATALOGO="https://viaje.ly/feliz-viaje-villa-insurgentes#ofertas";
   var pGrid=$("promoGrid"), pMsg=$("promoMsg"), pTabs=[].slice.call(document.querySelectorAll(".ptabs button"));
-  var REG_NOMBRE={europa:"Europa",asia:"Asia",centroamerica:"Centroamérica",sudamerica:"Sudamérica",cruceros:"Cruceros",pueblosmagicos:"Pueblos Mágicos"};
+  var REG_NOMBRE={europa:"Europa",asia:"Asia",centroamerica:"Centroamérica",sudamerica:"Sudamérica",cruceros:"Cruceros",pueblosmagicos:"Pueblos Mágicos",charter:"Charter carretero"};
   /* Own promotions: images uploaded to promocion/<folder>/ (lista.json is generated on deploy). */
-  var PROMO_DIR={pueblosmagicos:"promocion/pueblosmagicos/"};
+  var PROMO_DIR={charter:"promocion/charter/",pueblosmagicos:"promocion/pueblosmagicos/"};
   var pCache={}, pActual="";
   function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
   function num(n){var v=Number(String(n).replace(/[^\d.]/g,""));return isNaN(v)||!String(n).length?String(n):v.toLocaleString("es-MX")}
@@ -866,7 +873,11 @@ var PROMOS={"europa":[{"t":"Ruta de la Fe, Italia y Tierra Santa","i":"https://o
   }
   pTabs.forEach(function(b){b.addEventListener("click",function(){loadPromos(b.dataset.r)})});
   document.querySelectorAll("[data-promo]").forEach(function(a){a.addEventListener("click",function(){loadPromos(a.dataset.promo)})});
-  loadPromos("europa");
+  /* open on the first tab (charter) when it has images; otherwise on Europa so the section never starts empty */
+  fetch(PROMO_DIR.charter+"lista.json",{headers:{"Accept":"application/json"}})
+    .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+    .then(function(d){if(!Array.isArray(d)||!d.length)throw new Error("sin datos");pCache.charter=d;if(!pActual)loadPromos("charter")})
+    .catch(function(){if(!pActual)loadPromos("europa")});
 
   function toast(t){var el=$("toast");el.textContent=t;el.hidden=false;clearTimeout(toast.k);toast.k=setTimeout(function(){el.hidden=true},2200)}
   function copy(text,ok,el){
